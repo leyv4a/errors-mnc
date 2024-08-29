@@ -151,12 +151,12 @@ export default function Home() {
   return (
     <main
       style={backgroundStyle}
-      className="flex min-h-screen flex-col items-center justify-between pt-10 pb-24 px-24"
+      className="flex min-h-screen gap-2 flex-col items-center justify-between pt-10 pb-24 px-24"
     >
       <h1 className="text-white text-5xl font-bold  font-nerko">
         Calculadora de errores
       </h1>
-      <section className="bg-slate-800 p-5 rounded max-h-[63vh] h-[63vh] flex flex-col md:flex-row gap-2">
+      <section className="bg-slate-800 p-5 rounded  min-h-[63vh] flex flex-col md:flex-row gap-2">
         <form
           onSubmit={handleSubmit}
           className="bg-slate-500 max-w-[300px] w-[300px] min-h-[400px] md:h-auto  p-3 rounded flex flex-col gap-2 "
