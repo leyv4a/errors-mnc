@@ -239,7 +239,7 @@ export default function Home() {
             <Trash />
           </Button>
         </form>
-        <div className="flex items-center min-h-[300px] flex-col gap-2 bg-slate-500 rounded p-3">
+        <div className="flex items-center min-h-[55vh] flex-col gap-2 bg-slate-500 rounded p-3">
           <div className="flex gap-2 justify-end self-end">
             <Button
               variant={"outline"}
@@ -266,11 +266,11 @@ export default function Home() {
             </Button>
           </div>
           <aside
-            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[240px] ${
+            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[260px] ${
               isHistoryOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 h-0"
             }`}
           >
-            <div>
+            <div className="overflow-y-scroll scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-slate-600 max-h-[45vh]">
               {Object.entries(data).map(([key, value]) => (
                 <HistoryCard
                   key={key}
