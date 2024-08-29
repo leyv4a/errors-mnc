@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { HistoryCard } from "@/components/ui/historyCard";
 import { Input } from "@/components/ui/input";
-import { History, CircleHelp } from "lucide-react";
-import { Trash } from "lucide-react";
+import { History, CircleHelp, LocateFixed  as TableOfContents, Trash } from "lucide-react";
 
 export default function Home() {
   // Campos para guardar los valores del formulario
@@ -24,6 +23,7 @@ export default function Home() {
   const [data, setData] = React.useState<{
     [key: string]: { real: string; aprox: string };
   }>({});
+  const isEmpty = Object.keys(data).length === 0;
   const [contador, setContador] = React.useState<number>(1);
 
   // Guardara el estado de la peticion
@@ -47,6 +47,9 @@ export default function Home() {
       if (regex.test(value)) {
         setter(value);
       }
+      setAbsoluteError("");
+      setRelativeError("");
+      setPorcentualError("");
     };
 
   // Estilos en cascada para usar nuestro fondo personalizado
@@ -70,16 +73,16 @@ export default function Home() {
       setPrevReal(real);
 
       if (prevReal === real && prevAprox === aprox) {
-        return; 
+        return;
       }
-    
-      let shouldIncrementCounter = false; 
+
+      let shouldIncrementCounter = false;
       setData((prevData) => {
         // Verificar si la clave 'contador' ya existe en prevData
         if (prevData.hasOwnProperty(prevContador)) {
           return prevData; // No hagas nada si 'contador' ya existe
         }
-         shouldIncrementCounter = true;
+        shouldIncrementCounter = true;
         // Si no existe, agregar la nueva entrada
         return {
           ...prevData,
@@ -89,7 +92,7 @@ export default function Home() {
           },
         };
       });
-   
+
       // Guardamos los errores
       const errors = await calculateErrors(
         parseFloat(aprox) || 0,
@@ -121,32 +124,33 @@ export default function Home() {
   };
 
   const [isHistoryOpen, setHistoryOpen] = React.useState<boolean>(false);
+  const [isInfoOpen, setInfoOpen] = React.useState<boolean>(false);
 
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const redoCalc = (index?: number, real?:string, aprox?: string) => {
+  const redoCalc = (index?: number, real?: string, aprox?: string) => {
     setPrevAprox("");
     setPrevReal("");
-    setPrevContador(index ||0);
+    setPrevContador(index || 0);
     setReal(real || "");
     setAprox(aprox || "");
-    setTimeout(()=>{
+    setTimeout(() => {
       buttonRef.current?.click();
-    }, 200)
-  }
+    }, 200);
+  };
 
   // VISTA PRINCIPAL
   return (
     <main
       style={backgroundStyle}
-      className="flex min-h-screen h-screen flex-col items-center justify-between pt-10 pb-24 px-24"
+      className="flex min-h-screen flex-col items-center justify-center pt-10 pb-24 px-24"
     >
       <h1 className="text-white text-5xl font-bold mb-10 font-nerko">
         Calculadora de errores
       </h1>
-      <section className="bg-slate-800 h-full  p-5 rounded flex gap-2">
+      <section className="bg-slate-800 p-5 rounded max-h-[63vh] h-[63vh] flex flex-col md:flex-row gap-2">
         <form
           onSubmit={handleSubmit}
-          className="bg-slate-500 max-w-[300px] w-[300px] p-3 rounded flex flex-col gap-2 "
+          className="bg-slate-500 max-w-[300px] w-[300px] min-h-[400px] md:h-auto  p-3 rounded flex flex-col gap-2 "
         >
           <Input
             value={real}
@@ -158,7 +162,12 @@ export default function Home() {
             onChange={handleInputChange(setAprox)}
             placeholder="Valor aprox"
           />
-          <Button ref={buttonRef} disabled={isLoading} type="submit" size={"sm"}>
+          <Button
+            ref={buttonRef}
+            disabled={isLoading}
+            type="submit"
+            size={"sm"}
+          >
             {isLoading ? "Calculando..." : "Calcular"}
           </Button>
           <article
@@ -221,25 +230,75 @@ export default function Home() {
             <Trash />
           </Button>
         </form>
-        <div className="flex flex-col gap-2 bg-slate-500 rounded p-3">
-          <Button
-            variant={"outline"}
-            className="rounded-full bg-slate-400 hover:bg-slate-600 border-none self-end "
-            size={"icon"}
-            onClick={() => setHistoryOpen(!isHistoryOpen)}
-          >
-            <History />
-          </Button>
+        <div className="flex items-center min-h-[300px] flex-col gap-2 bg-slate-500 rounded p-3">
+          <div className="flex gap-2 justify-end self-end">
+            <Button
+              variant={"outline"}
+              className="rounded-full bg-slate-400 hover:bg-slate-600 border-none "
+              size={"icon"}
+              onClick={() => {
+                setInfoOpen(!isInfoOpen);
+                setHistoryOpen(false);
+              }}
+            >
+              <TableOfContents />
+            </Button>
+            <Button
+              variant={"outline"}
+              disabled= {isEmpty}
+              className="rounded-full bg-slate-400 hover:bg-slate-600 border-none"
+              size={"icon"}
+              onClick={() => {
+                setHistoryOpen(!isHistoryOpen);
+                setInfoOpen(false);
+              }}
+            >
+              <History />
+            </Button>
+          </div>
           <aside
             className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[220px] ${
-              isHistoryOpen ? "opacity-100 scale-100" : "opacity-0 scale-0"
+              isHistoryOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 h-0"
             }`}
           >
             <div>
-            {Object.entries(data).map(([key, value]) => (
-              <HistoryCard index={parseFloat(key)} real={value.real} aprox={value.aprox} redoCalc={redoCalc}/>
-            ))}
-              
+              {Object.entries(data).map(([key, value]) => (
+                <HistoryCard
+                  index={parseFloat(key)}
+                  real={value.real}
+                  aprox={value.aprox}
+                  redoCalc={redoCalc}
+                />
+              ))}
+            </div>
+          </aside>
+          <aside
+            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[220px] ${
+              isInfoOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 h-0"
+            }`}
+          >
+            <div className="w-[220px] rounded bg-slate-400 p-1 text-xs" >
+                <strong> Aplicaciones de los Errores</strong>
+                <br />
+                <ul>
+                  <li>
+                 <strong>Análisis de Datos:</strong>Permiten evaluar la precisión y exactitud
+                    de mediciones, estimaciones y modelos matemáticos.
+                  </li>
+                  <li>
+                   <strong> Ciencia e Ingeniería:</strong> Se utilizan para cuantificar
+                    incertidumbres en experimentos, garantizar la calidad de
+                    productos, y mejorar la precisión de mediciones.
+                  </li>
+                  <li>
+                    <strong>Economía y Finanzas:</strong> Los errores ayudan a analizar la
+                    fiabilidad de previsiones y a ajustar modelos predictivos.
+                    Estos conceptos son fundamentales para cualquier análisis
+                    cuantitativo, ya que proporcionan las herramientas
+                    necesarias para entender y minimizar la inexactitud en los
+                    resultados.
+                  </li>
+                </ul>
             </div>
           </aside>
         </div>
