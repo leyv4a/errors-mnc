@@ -410,83 +410,82 @@ import Link from "next/link";
 function DialogHelp({ type, real, aprox, resultado, campo1, campo2 }: Props) {
   return (
     <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            className="size-4 hover:bg-slate-400"
-            variant={"ghost"}
-            size={"icon"}
-          >
-            <CircleHelp />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-0 text-slate-300">
-          <DialogHeader>
-            <DialogTitle>Explicación cálculo de error {type}</DialogTitle>
-          </DialogHeader>
-          <div className="flex gap-2 text-xs">
-            <p>
-              Valor {campo1}: <span className="font-bold">{real}</span>
-            </p>
-            <p>
-              {campo2 != "" ? (
-                <>
-                  Valor {campo2}: <span className="font-bold">{aprox}</span>
-                </>
-              ) : (
-                ""
-              )}
-            </p>
-          </div>
-          <div>
-            {type == "absoluto" ? (
-              <>
-                <p className="text-sm mb-2">
-                  Formúla: | valor real - valor aprox | = Error absoluto
-                </p>
-                <p className="text-sm">
-                  Sustitución y resultado: | {real} - {aprox} | ={" "}
-                  <span className="italic underline decoration-wavy">
-                    {resultado}%
-                  </span>
-                </p>
-              </>
-            ) : type == "relativo" ? (
-              <>
-                <p className="text-sm mb-2">
-                  Formúla: <sup>error absoluto</sup>&frasl;<sub>valor real</sub>{" "}
-                  = Error relativo
-                </p>
-                <p className="text-sm">
-                  Sustitución y resultado: <sup>{real}</sup>&frasl;
-                  <sub>{aprox}</sub> ={" "}
-                  <span className="italic underline decoration-wavy">
-                    {resultado}
-                  </span>
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-sm mb-2">
-                  Formúla: Error porcentual = (error relativo × 100)
-                </p>
-                <p className="text-sm">
-                  Sustitución y resultado: {real} × 100 ={" "}
-                  <span className="italic underline decoration-wavy">
-                    {resultado}%
-                  </span>
-                </p>
-              </>
-            )}
-          </div>
+    <Dialog>
+  <DialogTrigger asChild>
+    <Button
+      className="size-4 hover:bg-slate-400"
+      variant="ghost"
+      size="icon"
+    >
+      <CircleHelp />
+    </Button>
+  </DialogTrigger>
 
-          <DialogClose asChild>
-            <Button size={"icon"} className="bg-transparent" type="submit">
-              <ThumbsUp />
-            </Button>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
+  <DialogContent className="sm:max-w-[425px] bg-slate-900 border-0 text-slate-300">
+    <DialogHeader>
+      <DialogTitle>Explicación del cálculo de error {type}</DialogTitle>
+    </DialogHeader>
+
+    <div className="flex gap-2 text-xs">
+      <p>
+        Valor {campo1}: <span className="font-bold">{real}</span>
+      </p>
+
+      <p>
+        {campo2 !== "" ? (
+          <>
+            Valor {campo2}: <span className="font-bold">{aprox}</span>
+          </>
+        ) : (
+          ""
+        )}
+      </p>
+    </div>
+
+    <div>
+      {type === "absoluto" ? (
+        <>
+          <p className="text-sm mb-2">
+            Fórmula: | valor real - valor aproximado | = Error absoluto
+          </p>
+          <p className="text-sm">
+            Sustitución y resultado: | {real} - {aprox} | ={" "}
+            <span className="italic underline decoration-wavy">
+              {resultado}%
+            </span>
+          </p>
+        </>
+      ) : type === "relativo" ? (
+        <>
+          <p className="text-sm mb-2">
+            Fórmula: <sup>error absoluto</sup> / <sub>valor real</sub>{" "}
+            = Error relativo
+          </p>
+          <p className="text-sm">
+            Sustitución y resultado: <sup>{real}</sup> / <sub>{aprox}</sub>{" "}
+            ={" "}
+            <span className="italic underline decoration-wavy">
+              {resultado}
+            </span>
+          </p>
+        </>
+      ) : (
+        <>
+          <p className="text-sm mb-2">
+            Fórmula: Error porcentual = (error relativo × 100)
+          </p>
+          <p className="text-sm">
+            Sustitución y resultado: {real} × 100 ={" "}
+            <span className="italic underline decoration-wavy">
+              {resultado}%
+            </span>
+          </p>
+        </>
+      )}
+    </div>
+  </DialogContent>
+</Dialog>
+
     </>
   );
 }
