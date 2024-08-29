@@ -12,12 +12,18 @@ import {
 import { HistoryCard } from "@/components/ui/historyCard";
 import { Input } from "@/components/ui/input";
 import { History, CircleHelp } from "lucide-react";
+import { Trash } from "lucide-react";
 
 export default function Home() {
-
   // Campos para guardar los valores del formulario
   const [real, setReal] = React.useState<string>("");
   const [aprox, setAprox] = React.useState<string>("");
+  const [data, setData] = React.useState<{
+    [key: string]: { real: string; aprox: string };
+  }>({});
+
+  // Guardara el estado de la peticion
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   // Campos para guardar el resultado de la funcion calcular errores
   const [absoluteError, setAbsoluteError] = React.useState<string>("");
@@ -39,7 +45,7 @@ export default function Home() {
       }
     };
 
-    // Estilos en cascada para usar nuestro fondo personalizado
+  // Estilos en cascada para usar nuestro fondo personalizado
   const backgroundStyle = {
     backgroundImage: 'url("/starsky.gif")',
     backgroundSize: "cover",
@@ -49,13 +55,21 @@ export default function Home() {
 
   // Función asíncrona para manejar la peticion del usuario
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
-    //setIsLoading(true)
     try {
       // Validamos que haya campos
       if (!real || !aprox) {
         return;
       }
+      //Guardamos en el historial
+      setData((prevData) => ({
+        ...prevData,
+        [`${real}_${aprox}`]: {
+          real: real,
+          aprox: aprox,
+        },
+      }));
       // Guardamos los errores
       const errors = await calculateErrors(
         parseFloat(aprox) || 0,
@@ -65,11 +79,22 @@ export default function Home() {
       setAbsoluteError(errors.Absolute);
       setRelativeError(errors.Relative);
       setPorcentualError(errors.Porcentage);
-      console.log(errors);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const ClearData = () => {
+    setReal("");
+    setAprox("");
+    setAbsoluteError("");
+    setRelativeError("");
+    setPorcentualError("");
+  };
+
+  const [isHistoryOpen, setHistoryOpen] = React.useState<boolean>(false);
 
   // VISTA PRINCIPAL
   return (
@@ -95,10 +120,14 @@ export default function Home() {
             onChange={handleInputChange(setAprox)}
             placeholder="Valor aprox"
           />
-          <Button type="submit" size={"sm"}>
-            Calcular
+          <Button disabled={isLoading} type="submit" size={"sm"}>
+            {isLoading ? "Calculando..." : "Calcular"}
           </Button>
-          <article className={`pt-5 text-center ${absoluteError.trim() != '' ? '' : 'hidden'}`}>
+          <article
+            className={`pt-5 text-center ${
+              absoluteError.trim() != "" ? "" : "hidden"
+            }`}
+          >
             <h2 className={`text-slate-800 font-bold`}> Resultados : </h2>
             <div className="rounded bg-slate-400 p-2 mt-2 text-start flex justify-between">
               <p className="text-xs">
@@ -106,33 +135,73 @@ export default function Home() {
                 {/* Error absoluto: | x - x<sub>2</sub> | = x{" "} */}
                 Error absoluto: | {real} - {aprox} | = {absoluteError}
               </p>
-              <DialogHelp type="absoluto" real={parseFloat(real)} aprox={parseFloat(aprox)} resultado={absoluteError as string}/>
+              <DialogHelp
+                type="absoluto"
+                real={parseFloat(real)}
+                aprox={parseFloat(aprox)}
+                resultado={absoluteError as string}
+                campo1="real"
+                campo2="aprox"
+              />
             </div>
             <div className="rounded bg-slate-400 p-2 mt-2 text-start flex justify-between">
               <p className="text-xs">
                 {" "}
-                Error relativo: <sup>{absoluteError}</sup>&frasl;<sub>{real}</sub> = {relativeError}
+                Error relativo: <sup>{absoluteError}</sup>&frasl;
+                <sub>{real}</sub> = {relativeError}
               </p>
-              <DialogHelp type="relativo" real={parseFloat(absoluteError)} aprox={parseFloat(real)} resultado={relativeError as string}/>
+              <DialogHelp
+                type="relativo"
+                real={parseFloat(absoluteError)}
+                aprox={parseFloat(real)}
+                resultado={relativeError as string}
+                campo1="error absoluto"
+                campo2="real"
+              />
             </div>
             <div className="rounded bg-slate-400 p-2 mt-2 text-start flex justify-between">
               {/* <p className="text-xs"> Error porcentual: er × 100 = x% </p> */}
-              <p className="text-xs"> Error porcentual: {relativeError} × 100 = {porcentualError}% </p>
-              <DialogHelp type="porcentual" real={parseFloat(relativeError)} resultado={porcentualError as string}/>
+              <p className="text-xs">
+                {" "}
+                Error porcentual: {relativeError} × 100 = {porcentualError}%{" "}
+              </p>
+              <DialogHelp
+                type="porcentual"
+                real={parseFloat(relativeError)}
+                resultado={porcentualError as string}
+                campo1="error relativo"
+                campo2=""
+              />
             </div>
           </article>
+          <Button
+            size={"icon"}
+            onClick={ClearData}
+            className={`self-center mt-2 ${!absoluteError ? "hidden" : ""}`}
+            variant={"destructive"}
+          >
+            <Trash />
+          </Button>
         </form>
         <div className="flex flex-col gap-2 bg-slate-500 rounded p-3">
           <Button
             variant={"outline"}
             className="rounded-full bg-slate-400 hover:bg-slate-600 border-none self-end "
             size={"icon"}
+            onClick={() => setHistoryOpen(!isHistoryOpen)}
           >
             <History />
           </Button>
-          <aside className="flex flex-col">
+          <aside
+            className={`flex flex-col transition-all ease-in delay-75 duration-150 ${
+              isHistoryOpen ? "opacity-100 scale-100" : "opacity-0 scale-0"
+            }`}
+          >
             <div>
-              <HistoryCard />
+            {Object.entries(data).map(([key, value]) => (
+              <HistoryCard index={parseFloat(key)} real={value.real} aprox={value.aprox} />
+            ))}
+              
             </div>
           </aside>
         </div>
@@ -145,12 +214,14 @@ type Props = {
   type: string;
   real?: number;
   aprox?: number;
-  resultado? : string
+  resultado?: string;
+  campo1?: string;
+  campo2?: string;
 };
-import { ThumbsUp } from 'lucide-react';
+import { ThumbsUp } from "lucide-react";
 
 // Dialogo que nos mostrara la ayuda para los calculs
-function DialogHelp({type, real, aprox, resultado} : Props) {
+function DialogHelp({ type, real, aprox, resultado, campo1, campo2 }: Props) {
   return (
     <>
       <Dialog>
@@ -167,30 +238,66 @@ function DialogHelp({type, real, aprox, resultado} : Props) {
           <DialogHeader>
             <DialogTitle>Explicación cálculo de error {type}</DialogTitle>
           </DialogHeader>
-            <div className="flex gap-2 text-xs">
-              <p> Valor real: <span className="font-bold">{real}</span></p>  <p>Valor aproximado: <span className="font-bold">{aprox}</span></p>
-            </div>
-            <div>
-              {type == 'absoluto' ? 
+          <div className="flex gap-2 text-xs">
+            <p>
+              Valor {campo1}: <span className="font-bold">{real}</span>
+            </p>
+            <p>
+              {campo2 != "" ? (
                 <>
-                <p className="text-sm mb-2">Formúla: | valor real - valor aprox | = Error absoluto</p>
-                <p className="text-sm">Sustitución y resultado: | {real} - {aprox} | = {resultado}</p>
+                  Valor {campo2}: <span className="font-bold">{aprox}</span>
                 </>
-              : type == 'relativo' ?
+              ) : (
+                ""
+              )}
+            </p>
+          </div>
+          <div>
+            {type == "absoluto" ? (
               <>
-                <p className="text-sm mb-2">Formúla: <sup>error absoluto</sup>&frasl;<sub>valor real</sub> = Error relativo</p>
-                <p className="text-sm">Sustitución y resultado: <sup>{real}</sup>&frasl;<sub>{aprox}</sub> = {resultado}</p>
+                <p className="text-sm mb-2">
+                  Formúla: | valor real - valor aprox | = Error absoluto
+                </p>
+                <p className="text-sm">
+                  Sustitución y resultado: | {real} - {aprox} | ={" "}
+                  <span className="italic underline decoration-wavy">
+                    {resultado}%
+                  </span>
+                </p>
               </>
-              :
+            ) : type == "relativo" ? (
               <>
-              <p className="text-sm mb-2">Formúla: Error porcentual = (error relativo × 100)</p>
-              <p className="text-sm">Sustitución y resultado: {real} × 100 = {resultado}%</p>
+                <p className="text-sm mb-2">
+                  Formúla: <sup>error absoluto</sup>&frasl;<sub>valor real</sub>{" "}
+                  = Error relativo
+                </p>
+                <p className="text-sm">
+                  Sustitución y resultado: <sup>{real}</sup>&frasl;
+                  <sub>{aprox}</sub> ={" "}
+                  <span className="italic underline decoration-wavy">
+                    {resultado}
+                  </span>
+                </p>
               </>
-              }
-            </div>
+            ) : (
+              <>
+                <p className="text-sm mb-2">
+                  Formúla: Error porcentual = (error relativo × 100)
+                </p>
+                <p className="text-sm">
+                  Sustitución y resultado: {real} × 100 ={" "}
+                  <span className="italic underline decoration-wavy">
+                    {resultado}%
+                  </span>
+                </p>
+              </>
+            )}
+          </div>
 
           <DialogClose asChild>
-            <Button size={'icon'} className="bg-transparent" type="submit"><ThumbsUp/></Button>
+            <Button size={"icon"} className="bg-transparent" type="submit">
+              <ThumbsUp />
+            </Button>
           </DialogClose>
         </DialogContent>
       </Dialog>
