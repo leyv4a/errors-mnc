@@ -273,6 +273,7 @@ export default function Home() {
             <div>
               {Object.entries(data).map(([key, value]) => (
                 <HistoryCard
+                  key={key}
                   index={parseFloat(key)}
                   real={value.real}
                   aprox={value.aprox}
