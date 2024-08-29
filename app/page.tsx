@@ -5,13 +5,22 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { HistoryCard } from "@/components/ui/historyCard";
 import { Input } from "@/components/ui/input";
-import { History, CircleHelp, LocateFixed  as TableOfContents, Trash } from "lucide-react";
+import {
+  History,
+  CircleHelp,
+  LocateFixed as TableOfContents,
+  Trash,
+  BookHeart,
+  Github,
+} from "lucide-react";
 
 export default function Home() {
   // Campos para guardar los valores del formulario
@@ -142,9 +151,9 @@ export default function Home() {
   return (
     <main
       style={backgroundStyle}
-      className="flex min-h-screen flex-col items-center justify-center pt-10 pb-24 px-24"
+      className="flex min-h-screen flex-col items-center justify-between pt-10 pb-24 px-24"
     >
-      <h1 className="text-white text-5xl font-bold mb-10 font-nerko">
+      <h1 className="text-white text-5xl font-bold  font-nerko">
         Calculadora de errores
       </h1>
       <section className="bg-slate-800 p-5 rounded max-h-[63vh] h-[63vh] flex flex-col md:flex-row gap-2">
@@ -245,7 +254,7 @@ export default function Home() {
             </Button>
             <Button
               variant={"outline"}
-              disabled= {isEmpty}
+              disabled={isEmpty}
               className="rounded-full bg-slate-400 hover:bg-slate-600 border-none"
               size={"icon"}
               onClick={() => {
@@ -277,32 +286,110 @@ export default function Home() {
               isInfoOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 h-0"
             }`}
           >
-            <div className="w-[220px] rounded bg-slate-400 p-1 text-xs" >
-                <strong> Aplicaciones de los Errores</strong>
-                <br />
-                <ul>
-                  <li>
-                 <strong>Análisis de Datos:</strong>Permiten evaluar la precisión y exactitud
-                    de mediciones, estimaciones y modelos matemáticos.
-                  </li>
-                  <li>
-                   <strong> Ciencia e Ingeniería:</strong> Se utilizan para cuantificar
-                    incertidumbres en experimentos, garantizar la calidad de
-                    productos, y mejorar la precisión de mediciones.
-                  </li>
-                  <li>
-                    <strong>Economía y Finanzas:</strong> Los errores ayudan a analizar la
-                    fiabilidad de previsiones y a ajustar modelos predictivos.
-                    Estos conceptos son fundamentales para cualquier análisis
-                    cuantitativo, ya que proporcionan las herramientas
-                    necesarias para entender y minimizar la inexactitud en los
-                    resultados.
-                  </li>
-                </ul>
+            <div className="w-[220px] rounded bg-slate-400 p-1 text-xs">
+              <strong> Aplicaciones de los Errores</strong>
+              <br />
+              <ul>
+                <li>
+                  <strong>Análisis de Datos:</strong> Permiten evaluar la
+                  precisión y exactitud de mediciones, estimaciones y modelos
+                  matemáticos.
+                </li>
+                <li>
+                  <strong> Ciencia e Ingeniería:</strong> Se utilizan para
+                  cuantificar incertidumbres en experimentos, garantizar la
+                  calidad de productos, y mejorar la precisión de mediciones.
+                </li>
+                <li>
+                  <strong>Economía y Finanzas:</strong> Los errores ayudan a
+                  analizar la fiabilidad de previsiones y a ajustar modelos
+                  predictivos. Estos conceptos son fundamentales para cualquier
+                  análisis cuantitativo, ya que proporcionan las herramientas
+                  necesarias para entender y minimizar la inexactitud en los
+                  resultados.
+                </li>
+              </ul>
             </div>
           </aside>
         </div>
       </section>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>
+            {" "}
+            <BookHeart />{" "}
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md bg-slate-900 border-none text-slate-300 w-[80vw] h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Informacion del proyecto</DialogTitle>
+            <DialogDescription className="text-slate-600">
+              Este es un proyecto realizado para la materia{" "}
+              <strong>Metodos Numericos Computacionales</strong> de ITSON
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 ">
+            <article className="">
+              <h2>Instrucciones:</h2>
+              <p className="text-sm">
+                La aplicación debe cumplir con lo siguiente:
+                <br />
+                <span className="text-xs">
+                ♦ Recibir 2 números con hasta 4 decimales, siendo el valor
+                  calculado y el valor real
+                  <br />
+                  ♦ Calcular el error absoluto <br />
+                  ♦ Calcular el error relativo
+                  <br />
+                  ♦ Calcular el error porcentual
+                  <br />
+                  ♦ Guardar un historial de los valores y los errores calculados
+                  <br />
+                  ♦ Un botón para ver el historial
+                  <br />
+                  ♦ El historial se limpia
+                  <br />
+                  cuando se cierra la aplicación
+                  <br />
+                </span>
+              </p>
+            </article>
+            <div className="flex justify-between">
+              <div>
+                Stack Utilizado<br />
+                <span className="text-xs">
+                ♦ Next.js : Framework React <br />
+                ♦ Shadcn : Componentes UI <br />
+                ♦ Tailwind.css : Estilos utilitarios <br />
+                ♦ TypeScript : Tipado estático <br />
+                ♦ Vercel : Hospedaje web <br />
+                ♦ Lucide : Iconos UI <br />
+                ♦ ESLint : Calidad código <br />
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <p >Enlaces</p>
+                <Button asChild size={'icon'} className="bg-transparent hover:bg-transparent">
+                  <Link target="_blank" href="https://github.com/leyv4a/errors-mnc"><Github/></Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="sm:justify-center self-end">
+            {/* <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose> */}{" "}
+            <Button asChild variant={"link"} className="text-slate-300">
+              <Link href="https://github.com/leyv4a" target="_blank">
+                Gabriel Leyva Esquivel
+              </Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
@@ -316,6 +403,7 @@ type Props = {
   campo2?: string;
 };
 import { ThumbsUp } from "lucide-react";
+import Link from "next/link";
 
 // Dialogo que nos mostrara la ayuda para los calculs
 function DialogHelp({ type, real, aprox, resultado, campo1, campo2 }: Props) {
