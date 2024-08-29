@@ -17,10 +17,14 @@ import { Trash } from "lucide-react";
 export default function Home() {
   // Campos para guardar los valores del formulario
   const [real, setReal] = React.useState<string>("");
+  const [prevReal, setPrevReal] = React.useState<string>("");
+  const [prevAprox, setPrevAprox] = React.useState<string>("");
+  const [prevContador, setPrevContador] = React.useState<number>(0);
   const [aprox, setAprox] = React.useState<string>("");
   const [data, setData] = React.useState<{
     [key: string]: { real: string; aprox: string };
   }>({});
+  const [contador, setContador] = React.useState<number>(1);
 
   // Guardara el estado de la peticion
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -55,26 +59,47 @@ export default function Home() {
 
   // Función asíncrona para manejar la peticion del usuario
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    setIsLoading(true);
     event.preventDefault();
+    setIsLoading(true);
     try {
       // Validamos que haya campos
       if (!real || !aprox) {
         return;
       }
-      //Guardamos en el historial
-      setData((prevData) => ({
-        ...prevData,
-        [`${real}_${aprox}`]: {
-          real: real,
-          aprox: aprox,
-        },
-      }));
+      setPrevAprox(aprox);
+      setPrevReal(real);
+
+      if (prevReal === real && prevAprox === aprox) {
+        return; 
+      }
+    
+      let shouldIncrementCounter = false; 
+      setData((prevData) => {
+        // Verificar si la clave 'contador' ya existe en prevData
+        if (prevData.hasOwnProperty(prevContador)) {
+          return prevData; // No hagas nada si 'contador' ya existe
+        }
+         shouldIncrementCounter = true;
+        // Si no existe, agregar la nueva entrada
+        return {
+          ...prevData,
+          [contador]: {
+            real: real,
+            aprox: aprox,
+          },
+        };
+      });
+   
       // Guardamos los errores
       const errors = await calculateErrors(
         parseFloat(aprox) || 0,
         parseFloat(real) || 0
       );
+      if (errors.success) {
+        if (shouldIncrementCounter) {
+          setContador(contador + 1);
+        }
+      }
       // Asignamos los errores a sus campos
       setAbsoluteError(errors.Absolute);
       setRelativeError(errors.Relative);
@@ -83,6 +108,7 @@ export default function Home() {
       console.log(error);
     } finally {
       setIsLoading(false);
+      setPrevContador(0);
     }
   };
 
@@ -95,6 +121,18 @@ export default function Home() {
   };
 
   const [isHistoryOpen, setHistoryOpen] = React.useState<boolean>(false);
+
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const redoCalc = (index?: number, real?:string, aprox?: string) => {
+    setPrevAprox("");
+    setPrevReal("");
+    setPrevContador(index ||0);
+    setReal(real || "");
+    setAprox(aprox || "");
+    setTimeout(()=>{
+      buttonRef.current?.click();
+    }, 200)
+  }
 
   // VISTA PRINCIPAL
   return (
@@ -120,7 +158,7 @@ export default function Home() {
             onChange={handleInputChange(setAprox)}
             placeholder="Valor aprox"
           />
-          <Button disabled={isLoading} type="submit" size={"sm"}>
+          <Button ref={buttonRef} disabled={isLoading} type="submit" size={"sm"}>
             {isLoading ? "Calculando..." : "Calcular"}
           </Button>
           <article
@@ -193,13 +231,13 @@ export default function Home() {
             <History />
           </Button>
           <aside
-            className={`flex flex-col transition-all ease-in delay-75 duration-150 ${
+            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[220px] ${
               isHistoryOpen ? "opacity-100 scale-100" : "opacity-0 scale-0"
             }`}
           >
             <div>
             {Object.entries(data).map(([key, value]) => (
-              <HistoryCard index={parseFloat(key)} real={value.real} aprox={value.aprox} />
+              <HistoryCard index={parseFloat(key)} real={value.real} aprox={value.aprox} redoCalc={redoCalc}/>
             ))}
               
             </div>
@@ -308,6 +346,7 @@ function DialogHelp({ type, real, aprox, resultado, campo1, campo2 }: Props) {
 // Funcion que calculara los errores
 const calculateErrors = async (aprox: number, real: number) => {
   return {
+    success: true,
     Absolute: Math.abs(aprox - real).toFixed(4),
     Relative: (Math.abs(aprox - real) / Math.abs(real)).toFixed(4),
     Porcentage: ((Math.abs(aprox - real) / Math.abs(real)) * 100).toFixed(1),
