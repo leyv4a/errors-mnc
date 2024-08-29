@@ -266,7 +266,7 @@ export default function Home() {
             </Button>
           </div>
           <aside
-            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[220px] ${
+            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[240px] ${
               isHistoryOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 h-0"
             }`}
           >
@@ -283,11 +283,11 @@ export default function Home() {
             </div>
           </aside>
           <aside
-            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[220px] ${
+            className={`flex flex-col transition-all ease-in delay-75 duration-150 min-w-[240px] ${
               isInfoOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 h-0"
             }`}
           >
-            <div className="w-[220px] rounded bg-slate-400 p-1 text-xs">
+            <div className="w-[240px] rounded bg-slate-400 p-1 text-xs">
               <strong> Aplicaciones de los Errores</strong>
               <br />
               <ul>

@@ -11,7 +11,7 @@ type Props = {
 
 const HistoryCard = ({index, real, aprox, redoCalc}: Props) => {
   return (
-    <div className='w-[220px] rounded bg-slate-400 p-1 flex justify-between mb-2'>
+    <div className='w-[240px] rounded bg-slate-400 p-1 flex justify-between mb-2'>
         <p className='text-xs'>
          [ {index} ] Valor real {real} - Valor aprox {aprox}
         </p>
