@@ -16,10 +16,10 @@ export default function Home() {
     <main style={backgroundStyle} className="flex min-h-screen h-screen flex-col items-center justify-between p-24">
       <section className="bg-slate-800 h-full w-1/2 p-5 rounded flex gap-2">
         <form className="bg-slate-500 p-3 rounded flex flex-col gap-2 w-1/2">
-          <Input className="" type="text" placeholder="Numero 1"/>
+          <Input className="bg-slate-400"  placeholder="Numero 1"/>
           <Input type="text" placeholder="Numero 1"/>
         </form>
-        <Button variant={'outline'} className="rounded-full bg-slate-500 hover:bg-slate-600" size={'icon'}><History/></Button>
+        <Button variant={'outline'} className="rounded-full bg-slate-500 hover:bg-slate-600 border-none" size={'icon'}><History/></Button>
       </section>
     </main>
   );
