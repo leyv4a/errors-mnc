@@ -18,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily : {
+        nerko : ["var(--font-nerko)"],
+
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
