@@ -6,7 +6,7 @@ import {HelpCircle} from 'lucide-react'
 
 type Props = {};
 
-export default function page({}: Props) {
+export default function NewtonRaphson({}: Props) {
   const backgroundStyle = {
     backgroundImage: 'url("/daysky.gif")',
     backgroundSize: "cover",
@@ -15,12 +15,12 @@ export default function page({}: Props) {
   };
 
   // Estados para los valores del formulario
-  const [funcion, setFuncion] = React.useState("");
-  const [derivada, setDerivada] = React.useState("");
-  const [valorInicial, setValorInicial] = React.useState("");
-  const [tolerancia, setTolerancia] = React.useState("");
-  const [iteraciones, setIteraciones] = React.useState("");
-  const [resultado, setResultado] = React.useState("");
+  const [funcion, setFuncion] = React.useState<string>("");
+  const [derivada, setDerivada] = React.useState<string>("");
+  const [valorInicial, setValorInicial] = React.useState<string>("");
+  const [tolerancia, setTolerancia] = React.useState<string>("");
+  const [iteraciones, setIteraciones] = React.useState<string>("");
+  const [resultado, setResultado] = React.useState<string>("");
 
       // Función para evaluar la función y la derivada usando mathjs o similar
       const evaluateFunction = (func: string, value: number) => {
