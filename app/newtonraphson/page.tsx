@@ -68,7 +68,8 @@ export default function NewtonRaphson({}: Props) {
         }
     };
 
-    const setExample =() => {
+    const setExample =(e) => {
+      e.preventDefault();
         setFuncion('x**2 - 4');
         setDerivada('2*x');
         setValorInicial('1');
@@ -94,7 +95,7 @@ export default function NewtonRaphson({}: Props) {
                     
                     <Button className='bg-green-700 hover:bg-green-900' type='submit'>Calcular</Button>
                     <span className="text-center">{resultado}</span>
-                    <Button title="Ejemplo" onClick={(e) => setExample()} size={'icon'} className="absolute bottom-0 right-0 me-2 mb-2"><HelpCircle/> </Button>
+                    <Button type="button" title="Ejemplo" onClick={(e) => setExample(e)} size={'icon'} className="absolute bottom-0 right-0 me-2 mb-2"><HelpCircle/> </Button>
                 </form>
       </section>
     </main>
